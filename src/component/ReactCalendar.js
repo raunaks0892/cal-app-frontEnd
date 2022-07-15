@@ -6,27 +6,22 @@ import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { Component,useRef } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import enIN from "date-fns/locale/en-IN";
-import XMLParser from "react-xml-parser";
+
 
 
 import credData from "../config/config";
 
-
-//import Filters from "./Filters";
-//import NavBar from "./NavBar";
 import SideBar from "./SideBar";
-//import Filter_test from "./Filter_test";
+
 import BackgroundWrapper from 'react-big-calendar/lib/BackgroundWrapper';
 import "../Cal.css";
-
-//import CustomSearch from "./CustomSearch";
 
 
 
@@ -74,11 +69,6 @@ class ReactCalendar extends Component {
     const usrName = credData.username;
 
     const pasword = credData.password;
-
-    // const width = this.divElement.clientHeight;
-    // this.setState({ width:width });
-    
-    //console.log("User name from config file: "+usrName+" and password: "+pasword);
     
     const fetchApiData= async (url)=>{
       const userName = credData.username;
@@ -319,9 +309,6 @@ class ReactCalendar extends Component {
 
   }
   setCurrentEventsData=(events)=>{
-    //console.log('test dropdown, data received from filters.js : '+events);
-    // alert("sidebar is "+!inactive+" now");
-    // this.setState({activeSideBar:!inactive})
     
     this.setState({cal_events:events})
   }
@@ -385,19 +372,7 @@ class ReactCalendar extends Component {
     }
     
   }
-  // getWidth = ()=>{
-    
-  //   if(this.state.leftExpand && this.state.rightExpand){
-  //     this.state.cal_width=860
-  //   }else if(!this.state.leftExpand && !this.state.rightExpand){
-  //     this.state.cal_width=1350
-
-  //   }else if(!this.state.leftExpand && this.state.rightExpand){
-  //     this.state.cal_width=1080
-  //   }else if(this.state.leftExpand && !this.state.rightExpand){
-  //     this.state.cal_width=1150
-  //   }
-  // }
+  
 
   render() {
     

@@ -3,7 +3,7 @@ import {TextField,Popover,InputAdornment,IconButton} from "@material-ui/core";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import { withStyles } from "@material-ui/styles";
 import moment from "moment";
-import { DateRange,Calendar } from 'react-date-range';
+import { DateRange} from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import "../App.css";
@@ -128,26 +128,4 @@ class DateRangePicker extends React.Component {
     }
   }
 export default DateRangePicker;
-// const DateRangePicker = ()=>{
-//     const [state, setState] = useState([
-//         {
-//           startDate: new Date(),
-//           endDate: null,
-//           key: "selection"
-//         }
-//       ]);
-//     const handleSelect=(date)=>{
-//         console.log(date); // native Date object
-//       }
-//     return(
-//         <div>
-//             {/* <DateRange date={new Date()} onChange={handleSelect} /> */}
-//             <DateRange
-//             onChange={item => setState([item.selection])}
-//             moveRangeOnFirstSelection={false}
-//             ranges={state}/>
-//         </div>
-//     )
-// }
 
-// export default DateRangePicker;

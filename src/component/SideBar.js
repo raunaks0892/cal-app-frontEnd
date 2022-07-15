@@ -1,14 +1,12 @@
 import React,{ Component,useState,useEffect,useRef } from "react";
 import "../App.css"
 import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../img/logo_2.png"
 import DateRangePicker from "./DateRangePicker";
-import { is } from "date-fns/locale";
 import "../Cal.css"
 
 const SideBar = (props)=>{
-    const[inactive,setInactive] = useState(false)
-    const[activeSideBar,setActiveSideBar]= useState(true);
+    // const[inactive,setInactive] = useState(false)
+    // const[activeSideBar,setActiveSideBar]= useState(true);
     const [priorityList, setPriorityList] = useState([{'sys_id':1,'name':'Critical','color':'red'},{'sys_id':2,'name':'High','color':'darkred'},{'sys_id':3,'name':'Moderate','color':'orange'},{'sys_id':4,'name':'Low','color':'CornflowerBlue'}]);
     const [currentDropDownList, setCurrentDropDownList] = useState([]);
     const [currentOptionId, setCurrentOptionId] = useState('');
@@ -16,8 +14,8 @@ const SideBar = (props)=>{
     const [cal_events, setCalEvents] = useState([]);
     const [selectedCalEventsIDs, setSelectedCalEventsIDs] = useState([]);
     const [textSearchData, setTextSearchData] = useState([]);
-    const refContainer = useRef();
-    const [dimensions, setDimensions]=useState({width:500,height:500});
+    
+    //const [dimensions, setDimensions]=useState({width:500,height:500});
     
 
  

@@ -1,6 +1,6 @@
 import "../App.css"
-import { BrowserRouter, Routes, Route, Navigate,Link } from "react-router-dom";
-import sideBar from "./SideBar";
+//import { BrowserRouter, Routes, Route, Navigate,Link } from "react-router-dom";
+
 const NavBar = ()=>{
    
 
