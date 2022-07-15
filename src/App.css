@@ -109,7 +109,7 @@
   width: 150px;
   padding: 15px 25px;
   border-radius: 5px;
-  color: grey;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,4 +117,116 @@
   margin-bottom: 20px;
   cursor: pointer;
   position: relative;
+}
+
+.navBarWrapper {
+  width: 100vw;
+  height: 50px;
+  background-color: white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navBar {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  background-color: darkred;
+}
+
+.navBar li {
+  list-style: none;
+  cursor: pointer;
+}
+
+.navBar a {
+  color: white;
+  text-decoration: none;
+}
+
+.side-menu {
+  position: fixed;
+  background: grey;
+  width: 320px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 30px 20px;
+  transition: width .2s ease-in;
+  left: 0%;
+}
+
+.side-menu .top-section .logo {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.side-menu .top-section .logo img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.side-menu .top-section .toggle-menu-btn {
+  color: #666;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  cursor: pointer;
+  bottom: 40px;
+}
+
+.side-menu.inactive {
+  width: 80px;
+}
+
+.side-menu.inactive .top-section .toggle-menu-btn {
+  right: -50px;
+
+}
+
+
+.split-main {
+  display: flex;
+  /* flex-direction: row; */
+}
+
+.split-top {
+  width: '50%';
+}
+
+.split-bottom {
+  width: '50%';
+}
+
+.side-menu .main-menu {
+  margin: 5px 0;
+  position: relative;
+  max-height: 500px;
+  /* overflow-y: scroll; */
+  overflow-x: hidden;
+  list-style: none;
+  border-spacing: 5px 1rem;
+
+}
+
+.side-menu .main-menu ul {
+  line-height: 10em;
+  border-spacing: 5px 1rem;
+}
+
+.side-menu .main-menu .menu-item {
+  color: white;
+  text-decoration: none;
+  font-size: 15px;
+  display: block;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
 }

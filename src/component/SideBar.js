@@ -1,21 +1,24 @@
-import React,{ Component,useState,useEffect } from "react";
-import logo from '../img/logo_1.png';
-import axios from "axios";
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { render } from "@testing-library/react";
-import Table from 'react-bootstrap/Table'
+import React,{ Component,useState,useEffect,useRef } from "react";
+import "../App.css"
 import "bootstrap/dist/css/bootstrap.min.css";
+import logo from "../img/logo_2.png"
+import DateRangePicker from "./DateRangePicker";
+import { is } from "date-fns/locale";
+import "../Cal.css"
 
-function Filters(props){
-  
-  const [priorityList, setPriorityList] = useState([{'sys_id':1,'name':'Critical'},{'sys_id':2,'name':'High'},{'sys_id':3,'name':'Moderate'},{'sys_id':4,'name':'Low'}]);
-  const [currentDropDownList, setCurrentDropDownList] = useState([]);
-  const [currentOptionId, setCurrentOptionId] = useState('');
-  const [optionList, setOptionList] = useState([]);
-  const [cal_events, setCalEvents] = useState([]);
-  const [selectedCalEventsIDs, setSelectedCalEventsIDs] = useState([]);
-  const [textSearchData, setTextSearchData] = useState([]);
+const SideBar = (props)=>{
+    const[inactive,setInactive] = useState(false)
+    const[activeSideBar,setActiveSideBar]= useState(true);
+    const [priorityList, setPriorityList] = useState([{'sys_id':1,'name':'Critical','color':'red'},{'sys_id':2,'name':'High','color':'darkred'},{'sys_id':3,'name':'Moderate','color':'orange'},{'sys_id':4,'name':'Low','color':'CornflowerBlue'}]);
+    const [currentDropDownList, setCurrentDropDownList] = useState([]);
+    const [currentOptionId, setCurrentOptionId] = useState('');
+    const [optionList, setOptionList] = useState([]);
+    const [cal_events, setCalEvents] = useState([]);
+    const [selectedCalEventsIDs, setSelectedCalEventsIDs] = useState([]);
+    const [textSearchData, setTextSearchData] = useState([]);
+    const refContainer = useRef();
+    const [dimensions, setDimensions]=useState({width:500,height:500});
+    
 
  
 
@@ -27,7 +30,13 @@ function Filters(props){
       
    
 
-  },[cal_events])
+  },[cal_events]);
+
+  useEffect(()=>{
+    
+      handleTextSearch(textSearchData);
+  },[textSearchData])
+
 
 
   const handleChange=(event)=>{
@@ -94,6 +103,7 @@ function Filters(props){
                 filterService.title = srvc.number+" "+srvc.title
                 filterService.start = srvc.start;
                 filterService.end = srvc.end;
+                filterService.color = srvc.color;
 
                 collectAllData.sys_id = srvc.sys_id
                 
@@ -121,6 +131,7 @@ function Filters(props){
                 filterGroup.title = assgn_group.number+" "+assgn_group.title
                 filterGroup.start = assgn_group.start;
                 filterGroup.end = assgn_group.end;
+                filterGroup.color = assgn_group.color
 
                 collectGroupData.sys_id = assgn_group.sys_id
 
@@ -144,8 +155,9 @@ function Filters(props){
                 prtyEvent.title = prty.number+" "+prty.title
                 prtyEvent.start = prty.start;
                 prtyEvent.end = prty.end;
+                prtyEvent.color = prty.color
 
-                //console.log("test dropdown, priority objcet : "+prtyEvent.title+" "+prtyEvent.start+" "+prtyEvent.end)
+                console.log("test dropdown, priority objcet : "+prtyEvent.title+" "+prtyEvent.start+" "+prtyEvent.end+" "+prtyEvent.color)
 
                 collectPriorityData.sys_id = prty.sys_id
 
@@ -175,10 +187,6 @@ function Filters(props){
     //alert('Testing text search');
     const searched_text = [];
     
-    //if(Object(cal_events).length==0){
-      //alert('cal_events is empty');
-      //console.log('cal_events is empty AND textSearchData: '+textSearchData);
-      
       props.pass_events_data.map((searchObject)=>{
         
         //console.log('textSearchData title check : '+searchObject.title+"  "+textSearchData);
@@ -190,6 +198,7 @@ function Filters(props){
           tempObject.title = searchObject.number+" "+searchObject.title
           tempObject.start = searchObject.start
           tempObject.end = searchObject.end
+          tempObject.color = searchObject.color
 
           searched_text.push(tempObject)
         }
@@ -200,6 +209,7 @@ function Filters(props){
           tempObject.title = searchObject.number+" "+searchObject.title
           tempObject.start = searchObject.start
           tempObject.end = searchObject.end
+          tempObject.color = searchObject.color
 
           searched_text.push(tempObject)
 
@@ -214,6 +224,7 @@ function Filters(props){
             tempObject.title = searchObject.number+" "+searchObject.title
             tempObject.start = searchObject.start
             tempObject.end = searchObject.end
+            tempObject.color = searchObject.color
   
             searched_text.push(tempObject)
   
@@ -231,6 +242,7 @@ function Filters(props){
             tempObject.title = searchObject.number+" "+searchObject.title
             tempObject.start = searchObject.start
             tempObject.end = searchObject.end
+            tempObject.color = searchObject.color
   
             searched_text.push(tempObject)
             
@@ -246,6 +258,7 @@ function Filters(props){
             tempObject.title = searchObject.number+" "+searchObject.title
             tempObject.start = searchObject.start
             tempObject.end = searchObject.end
+            tempObject.color = searchObject.color
   
             searched_text.push(tempObject)
             
@@ -264,71 +277,146 @@ function Filters(props){
     window.open("https://change-request-calendar-backnd.herokuapp.com/auth/logout", "_self");
   };
 
-  return(
-      <div className="row">
-        <nav className="navbar navbar-light bg-light">
-        <div className="col-md-3">
-          <a className="navbar-brand" href="#">
-            <img src={logo} alt="" width="300" height="40" className="d-inline-block align-text-top"/>
-          </a>
+  const handleSelectedDateRange=(selectedFromDate, selectedToDate)=>{
+    const temp_date_info = [];
+    selectedFromDate = new Date(selectedFromDate);
+    
+    const fromDatedate = selectedFromDate.getDate();
+    const fromDateMonth = selectedFromDate.getMonth()+1;
+    const fromDateYear = selectedFromDate.getFullYear();
+    
 
-        </div>
-        <div className="col-md-7">
-          <div className="row">
-            
-            <div className="form-group col-md-3">
-          
-              <select className="form-control" onChange={(e)=>handleChange(e)}>
-                <option key="0" value="0">--Select filter--</option>
-                <option key="1" value="1">Service</option>
-                <option key="2" value="2">Assignment Group</option>
-                <option key="3" value="3">Priority</option>
-                <option key="4" value="4">text</option>
+    const fromDate_temp = fromDateMonth+"/"+fromDatedate+"/"+fromDateYear;
+    const fromDate = Date.parse(fromDate_temp);
 
-              </select>
-            </div>
-              <div className="form-group col-md-4" >
-              {
-                currentOptionId!=4 ?
-              
-              <select className="form-control" onChange={(e)=>handleDependentChange(e)}>
-                { <option value="0">--dependent filter--</option> }
-                  {
-                    currentDropDownList.map((option,i)=>(
-                      <option key={i} value={option.sys_id}>{option.name}</option>
-                    ))
-                  
-                    
-                  }
-              </select>:
-              
-              <div className="row">
-                <div className="col-md-10">
-                  {/* <input type="text" placeholder="Serach" className="form-control" onChange={(e)=>setTextSearchData(e.target.value)} /> */}
-                  <form className="form-inline mr-auto mb-4">
-                    <input className="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" onChange={(e)=>setTextSearchData(e.target.value)}/>
-                    
-                  </form>
-                </div>
-                 <div className="col-md-2">
-                  {/*<button type="submit" onClick={(e)=>handleTextSearch(e)}><i className="bi bi-search"></i></button> */}
-                  <button className="btn btn-secondary btn-rounded" type="submit" onClick={(e)=>handleTextSearch(e)}>Search</button>
-                </div>
-              </div>
-                
-              }
-               
-            </div>
-            
-          </div>
-          
-        </div>
-        <div className="logout" onClick={logout}>Logout</div>
-        </nav>
+    selectedToDate = new Date(selectedToDate);
+    
+    const toDatedate = selectedToDate.getDate();
+    const toDateMonth = selectedToDate.getMonth()+1;
+    const toDateYear = selectedToDate.getFullYear();
+    
+
+    const toDate_temp = toDateMonth+"/"+toDatedate+"/"+toDateYear
+    const toDate = Date.parse(toDate_temp);
+
+    //console.log("fromDate: "+fromDate+" toDate: "+toDate);
+    props.pass_events_data.map((eventInfo)=>{
+      const tempObject = {};
+      const event_start_date = (new Date(eventInfo.start).getMonth()+1)+"/"+new Date(eventInfo.start).getDate()+"/"+new Date(eventInfo.start).getFullYear();
+      const event_end_date = (new Date(eventInfo.end).getMonth()+1)+"/"+new Date(eventInfo.end).getDate()+"/"+new Date(eventInfo.end).getFullYear();
+      
+      const event_date_start = Date.parse(event_start_date);
+      const event_date_end = Date.parse(event_end_date);
+      if((event_date_start <= toDate && event_date_start >= fromDate)) {
+        //console.log("event date lies between selected start and end date -1:"+eventInfo.title);
         
-      </div> 
+          tempObject.title = eventInfo.number+" "+eventInfo.title
+          tempObject.start = eventInfo.start
+          tempObject.end = eventInfo.end
+          tempObject.color = eventInfo.color
 
-  )
+          temp_date_info.push(tempObject)
+
+      }else if(event_date_end <= toDate && event_date_end >= fromDate){
+        //console.log("event date lies between selected start and end date -2:"+eventInfo.title);
+        tempObject.title = eventInfo.number+" "+eventInfo.title
+        tempObject.start = eventInfo.start
+        tempObject.end = eventInfo.end
+        tempObject.color = eventInfo.color
+
+        temp_date_info.push(tempObject)
+      }
+    
+    })
+
+     setCalEvents(temp_date_info);
+
+
+
+  }
+
+  // const handleSidebarToggleButton=()=>{
+  //   setInactive(!inactive)
+  // }
+
+
+    return(
+        //ref={refContainer}
+        <div >
+            <div className="main-menu">
+                <ul>
+                    <div className="col">
+                        <div className="row mt-4">
+                            <div className="form-group">
+                                <select className="form-control" onChange={(e)=>handleChange(e)}>
+                                    <option key="0" value="0">--Select filter--</option>
+                                    <option key="1" value="1">Service</option>
+                                    <option key="2" value="2">Assignment Group</option>
+                                    <option key="3" value="3">Priority</option>
+                                    <option key="4" value="4">Planned Date</option>
+                                    <option key="5" value="5">text</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div className="row mt-4">
+                            <div className="form-group">
+                                {
+                                    currentOptionId==4?
+                                    <div>
+                                        <div className="row mt-2">
+                                            <div className="form-control datepicker col-md-2">
+                                                {/* <select className="form-control"> */}
+                                                  <div className="date-picker">
+                                                    <DateRangePicker selectedDateInfo={(e,y)=>handleSelectedDateRange(e,y)}/>
+                                                  </div>
+                                                    {/* <option value="1">Start Planned Date</option> */}
+                                                {/* </select>*/}
+                                            </div> 
+                                        </div>
+                                        {/* <div className="row mt-4">
+                                            <div className="form-group">
+                                                <select className="form-control">
+                                                    <option value="1">End Planned Date</option>
+                                                </select>
+                                            </div>      
+                                        </div> */}
+                                    </div>
+                                    
+                                    :
+                                    currentOptionId!=5?
+                                        <select className="form-control" onChange={(e)=>handleDependentChange(e)}>
+                                            { <option value="0">--dependent filter--</option> }
+                                            {
+                                                currentDropDownList.map((option,i)=>(
+                                                    <option key={i} value={option.sys_id}>{option.name}</option>
+                                                ))
+                    
+                        
+                                            }
+                                     </select>:
+                                    
+                                        <form className="form-inline mr-auto mb-4">
+                                            <input className="form-control mr-sm-2" type="text" placeholder="Search..." aria-label="Search" onChange={(e)=>setTextSearchData(e.target.value)}/>
+                                        </form>
+                                    
+                                
+                                }
+
+                            </div>
+                        </div>
+
+                    </div>
+  
+                </ul>
+ 
+            </div>
+            
+        </div>
+    )
+
+    
+
 }
 
-export default Filters;
+export default SideBar;
