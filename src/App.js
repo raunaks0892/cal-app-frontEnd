@@ -37,25 +37,26 @@ const App = ()=>{
 
   //console.log("user : ===>"+user);
   return(
-    <div>
-      <ReactCalendar/>
-    </div>
-    // <BrowserRouter>
-    //   <div>
-    //     <Routes>
-    //        {/* <Route path="/" element={<Login/>}/>
-    //       <Route path="/login" element={<Login/>}/>
-    //       <Route path="/calendar" element={<ReactCalendar/>}/>  */}
-    //        <Route path="/" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
-    //       <Route path="/login" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
-    //       <Route path="/calendar" element={user ? <ReactCalendar/>:<Navigate to="/login"/>}/> 
-    //       {/* <Route path="/" element={user ?<ReactCalendar/>:<Login/>}/>
-    //       <Route path="/login" element={user ? <ReactCalendar/>:<Login/>}/>
-    //       <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/> */}
-    //     </Routes>
-    //   </div>
+    // <div>
+    //   {user?<ReactCalendar/>:<Login/>}
+      
+    // </div>
+    <BrowserRouter>
+      <div>
+        <Routes>
+           {/* <Route path="/" element={<Login/>}/>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/calendar" element={<ReactCalendar/>}/>  */}
+           <Route path="/" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
+          <Route path="/login" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
+          <Route path="/calendar" element={user ? <ReactCalendar/>:<Navigate to="/login"/>}/> 
+          {/* <Route path="/" element={user ?<ReactCalendar/>:<Login/>}/>
+          <Route path="/login" element={user ? <ReactCalendar/>:<Login/>}/>
+          <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/> */}
+        </Routes>
+      </div>
 
-    // </BrowserRouter>
+    </BrowserRouter>
     
     
   );
