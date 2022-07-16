@@ -1,8 +1,8 @@
 import "./App.css";
 import ReactCalendar from "./component/ReactCalendar";
 import Login from "./component/Login";
-// import { BrowserRouter, Routes, Route, Navigate, Switch } from "react-router-dom";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+//import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Cal.css";
@@ -39,18 +39,18 @@ const App = ()=>{
     //   {user?<ReactCalendar/>:<Login/>}
       
     // </div>
-    <BrowserRouter>
-    <div>
-      <Switch>
-        <Route exact path="/" element={user ? <ReactCalendar/> : <Login/>}/>
-        <Route path="/login" element={user ? <ReactCalendar/> : <Login/>}/>
-        <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/>
-      </Switch>
-    </div>
-    </BrowserRouter>
     // <BrowserRouter>
-    //   <div>
-    //     <Routes>
+    
+    //   <Switch>
+    //     <Route exact path="/" element={user ? <ReactCalendar/> : <Login/>}/>
+    //     <Route path="/login" element={user ? <ReactCalendar/> : <Login/>}/>
+    //     <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/>
+    //   </Switch>
+    
+    // </BrowserRouter>
+     <BrowserRouter>
+       <div>
+         <Routes>
     //        {/* <Route path="/" element={<Login/>}/>
     //       <Route path="/login" element={<Login/>}/>
     //       <Route path="/calendar" element={<ReactCalendar/>}/>  */}
@@ -60,10 +60,10 @@ const App = ()=>{
     //       {/* <Route path="/" element={user ?<ReactCalendar/>:<Login/>}/>
     //       <Route path="/login" element={user ? <ReactCalendar/>:<Login/>}/>
     //       <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/> */}
-    //     </Routes>
-    //   </div>
+         </Routes>
+       </div>
 
-    // </BrowserRouter>
+     </BrowserRouter>
     
     
   );
