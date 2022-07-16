@@ -16,7 +16,7 @@ const App = ()=>{
  
 
   useEffect(()=>{
-     axios.get(loginSuccess_local,{withCredentials:true}).then((response)=>{
+     axios.get(loginSuccess_Server,{withCredentials:true}).then((response)=>{
       //console.log("get user detail response : "+response.data);
       if(response.data){
         // let tempData = response.data; 
