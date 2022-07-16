@@ -6,10 +6,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Cal.css";
 
-//const loginSuccess_local = "http://localhost:3004/auth/login/success";
 const loginSuccess_local = "http://localhost:3004/auth/getUser";
 const loginSuccess_Server = "https://change-request-calendar-backnd.herokuapp.com/auth/getUser";
-//const loginUrl = "http://localhost:3004/auth1/getUser";
+
 
 const App = ()=>{
   const [user, setUser] = useState(null);
@@ -43,11 +42,11 @@ const App = ()=>{
     // </div>
     <BrowserRouter>
     <div>
-      <Switch>
-        <Route exact path="/" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
-        <Route path="/login" element={user ? <Navigate to="/calendar"/> : <Login/>}/>
-        <Route path="/calendar" element={user ? <ReactCalendar/>:<Navigate to="/login"/>}/>
-      </Switch>
+      <Routes>
+        <Route exact path="/" element={user ? <ReactCalendar/> : <Login/>}/>
+        <Route path="/login" element={user ? <ReactCalendar/> : <Login/>}/>
+        <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/>
+      </Routes>
     </div>
     </BrowserRouter>
     // <BrowserRouter>
