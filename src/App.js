@@ -1,7 +1,8 @@
 import "./App.css";
 import ReactCalendar from "./component/ReactCalendar";
 import Login from "./component/Login";
-import { BrowserRouter, Routes, Route, Navigate, Switch } from "react-router-dom";
+// import { BrowserRouter, Routes, Route, Navigate, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Cal.css";
@@ -31,8 +32,6 @@ const App = ()=>{
   },[])
 
   
-  
-  
 
   //console.log("user : ===>"+user);
   return(
@@ -42,11 +41,11 @@ const App = ()=>{
     // </div>
     <BrowserRouter>
     <div>
-      <Routes>
+      <Switch>
         <Route exact path="/" element={user ? <ReactCalendar/> : <Login/>}/>
         <Route path="/login" element={user ? <ReactCalendar/> : <Login/>}/>
         <Route path="/calendar" element={user ? <ReactCalendar/>:<Login/>}/>
-      </Routes>
+      </Switch>
     </div>
     </BrowserRouter>
     // <BrowserRouter>
