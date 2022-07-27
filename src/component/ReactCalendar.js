@@ -19,6 +19,7 @@ import enIN from "date-fns/locale/en-IN";
 import credData from "../config/config";
 
 import SideBar from "./SideBar";
+import TextSearch from "./TextSearch";
 
 import BackgroundWrapper from 'react-big-calendar/lib/BackgroundWrapper';
 import "../Cal.css";
@@ -52,6 +53,8 @@ class ReactCalendar extends Component {
       pass_events_data:[],
       serviceList:[],
       groupList:[],
+      allUserList:[],
+      groupMemberList:[],
       priorityList:[{'sys_id':1,'name':'Critical','color':'red'},{'sys_id':2,'name':'High','color':'darkred'},{'sys_id':3,'name':'Moderate','color':'orange'},{'sys_id':4,'name':'Low','color':'CornflowerBlue'}],
       width: 0,
       inactive:false,
@@ -59,13 +62,14 @@ class ReactCalendar extends Component {
       contract:true,
       rightExpand:true,
       cal_width:860,
-      event_popup_data:[]
+      event_popup_data:[],
+      assignedToName:""
     };
   }
 
   
 
-  componentDidMount() {
+   componentDidMount() {
     const usrName = credData.username;
 
     const pasword = credData.password;
@@ -83,52 +87,105 @@ class ReactCalendar extends Component {
           "Content-Type": "application/json",
         },
       };
-    const response = await axios(configuration);
+      const response = await axios(configuration);
 
-     let tempData = response.data;
-     const resArray = [];
-     for(let i=0;i<tempData.result.length;i++){
+      let tempData = response.data;
+      const resArray = [];
+      for(let i=0;i<tempData.result.length;i++){
 
         let resObject = {};
         let name;
         let sys_id;
+        if(url.includes('sys_user_grmember')){
+          for(let x in tempData.result[i]){
+            if(x==="sys_id"){
+              resObject.sys_id = tempData.result[i][x];
+            }else if(x==="user"){
+              resObject.user_sys_id = tempData.result[i][x].value;
+            }else if(x==="group"){
+              resObject.group_sys_id = tempData.result[i][x].value;
+            }
 
-        for(let x in tempData.result[i]){
-          if(x==="name"){
-            resObject.name = tempData.result[i][x];
-          }else if(x==="sys_id"){
-            resObject.sys_id = tempData.result[i][x];
+  
           }
 
+        }else{
+
+          for(let x in tempData.result[i]){
+            if(x==="name"){
+              resObject.name = tempData.result[i][x];
+            }else if(x==="sys_id"){
+              resObject.sys_id = tempData.result[i][x];
+            }
+  
+          }
         }
+
+        
         //console.log("resObject : "+resObject+" name:"+resObject.name+" sys_id:"+resObject.sys_id);
         resArray.push(resObject);
-
-
-     }
+      }
 
      return resArray;
-  }
-  const getAllServices = async ()=>{
-    const serviceUrl = credData.service_url;
-    const allServices = await fetchApiData(serviceUrl);
-    //console.log(" getAllServices length: "+allServices);
-    this.setState({serviceList:allServices});
-    
+    }
+    const getAllServices = async ()=>{
+      const serviceUrl = credData.service_url;
+      const allServices = await fetchApiData(serviceUrl);
+      //console.log(" getAllServices length: "+allServices);
+      this.setState({serviceList:allServices});
+      
 
-  }
-  const getAllAssignmentGroup = async ()=>{
-    const assignmentGroupUrl = credData.assignment_group_url;
-    const allgroups = await fetchApiData(assignmentGroupUrl);
-    //console.log(" getAllServices length: "+allgroups);
-    this.setState({groupList:allgroups});
-    
+    }
+    const getAllAssignmentGroup = async ()=>{
+      const assignmentGroupUrl = credData.assignment_group_url;
+      const allgroups = await fetchApiData(assignmentGroupUrl);
+      //console.log(" getAllServices length: "+allgroups);
+      this.setState({groupList:allgroups});
+      
 
-  }
-  
+    }
+    const getAllUsers = async ()=>{
+      const userUrl = credData.sys_user_url;
+      const usersData = await fetchApiData(userUrl);
+      console.log(" getAllUsers length: "+usersData);
+      this.setState({allUserList:usersData}); 
+
+      // this.state.allUserList.map((ele)=>{
+      //   console.log("  sys_id : "+ele.sys_id+", user name:"+ele.name);
+      // })
+
+    }
+    const getAllAssignmentGroupMember = async ()=>{
+      const assignmentGroupMemberUrl = credData.sys_user_grmember;
+      const groupMembers = await fetchApiData(assignmentGroupMemberUrl);
+      //console.log(" getAllServices length: "+allgroups);
+      const userGroupArray = [];
+      // groupMembers.map((grmem)=>{
+      //   console.log("grmember===>"+grmem.sys_id+" , :"+grmem.user_sys_id+" , :"+grmem.group_sys_id);
+        
+        
+      // })
+
+      this.setState({groupMemberList:groupMembers});
+      
+
+    }
+
    
-  getAllServices();
-  getAllAssignmentGroup();
+    getAllServices();
+    getAllAssignmentGroup();
+    getAllUsers();
+    getAllAssignmentGroupMember();
+
+    const getUserDetail = (temp_sys_id)=>{
+      console.log("user inside getUserDetail"+temp_sys_id);
+      this.state.allUserList.map((ele)=>{
+        if(ele.sys_id===temp_sys_id){
+          console.log("user  sys_id : "+ele.sys_id+", user name:"+ele.name);
+        }
+        
+      })
+    }
  
 
     let self = this;
@@ -200,6 +257,8 @@ class ReactCalendar extends Component {
             }else if(x==="business_service"){
              
               if(tempData.result[i][x]===""){
+                eventObject.service="";
+                eventObject.service_name="";
                 search_event_object.service="";
                 search_event_object.service_name="";
               }else{
@@ -208,6 +267,8 @@ class ReactCalendar extends Component {
                   if(ele.sys_id === tempData.result[i][x].value){
                     search_event_object.service=ele.sys_id
                     search_event_object.service_name=ele.name
+                    eventObject.service=ele.sys_id
+                    eventObject.service_name=ele.name
                     //console.log("business service :"+search_event_object.service);
                   }
                 })
@@ -217,14 +278,38 @@ class ReactCalendar extends Component {
               if(tempData.result[i][x]===""){
                 search_event_object.assignment_group=""
                 search_event_object.assignment_group_name=""
+                eventObject.assignment_group=""
+                eventObject.assignment_group_name=""
               }else{
                 self.state.groupList.map((ele)=>{
+                  //console.log("assignment group loop started");
                   if(ele.sys_id === tempData.result[i][x].value){
                     search_event_object.assignment_group=ele.sys_id
                     search_event_object.assignment_group_name=ele.name
+                    eventObject.assignment_group=ele.sys_id
+                    eventObject.assignment_group_name=ele.name
                   }
                 })
                 
+              }
+            }else if(x==="assigned_to"){
+              if(tempData.result[i][x]===""){
+                //console.log("assigned_to found blank: "+tempData.result[i]["number"]);
+                search_event_object.assigned_to=""
+                search_event_object.assigned_to_name=""
+                eventObject.assigned_to=""
+              }else{
+                //console.log("assigned_to found: "+tempData.result[i]["number"]+" "+tempData.result[i]["assigned_to"].value);
+                search_event_object.assigned_to=tempData.result[i][x].value
+                eventObject.assigned_to=tempData.result[i][x].value
+                // const user_name = getUserDetail(tempData.result[i][x].value);
+                // if(user_name){
+                //   search_event_object.assigned_to=tempData.result[i][x].value
+                //   search_event_object.assigned_to_name=user_name
+                // }
+                // self.state.allUserList.map((user)=>{
+                //   console.log("inside userlist")
+                // })
               }
             }else if(x==="priority"){
               if(tempData.result[i][x]===""){
@@ -295,7 +380,6 @@ class ReactCalendar extends Component {
         })
 
         //console.log("cal_events Array length: "+this.state.length);
-       
         
       })
       .catch(function (error) {
@@ -308,10 +392,16 @@ class ReactCalendar extends Component {
   componentDidUpdate(){
 
   }
+
   setCurrentEventsData=(events)=>{
     
     this.setState({cal_events:events})
   }
+
+  setCurrentEventsAfterTextSearch=(events)=>{
+    this.setState({cal_events:events})
+  }
+
   eventStyleGenerator = (event,start, end, isSelected)=>{
     console.log("eventStyleGenerator : "+event.color);
     const eventColor = event.color;
@@ -338,7 +428,7 @@ class ReactCalendar extends Component {
   }
 
   handleClickOnSlot=(slotInfo)=>{
-    console.log("slotInfo:"+slotInfo.action)
+    //console.log("slotInfo:"+slotInfo.action)
     const temp_pop_data = [];
     if(slotInfo.action==='click'){
       console.log("slot timming: "+slotInfo.slots);
@@ -352,8 +442,21 @@ class ReactCalendar extends Component {
         const event_end_date = (new Date(event.end).getMonth()+1)+"/"+new Date(event.end).getDate()+"/"+new Date(event.end).getFullYear();
         //console.log("event_start_date: "+event_start_date+" event_end_date: "+event_end_date);
         if(event_start_date===clicked_slot_date || event_end_date===clicked_slot_date){
+          const event_popup = {};
+          event_popup.Date = clicked_slot_date;
+          event_popup.title = event.title;
+          event_popup.assignment_group = event.assignment_group_name
+          event_popup.assigned_to = event.assigned_to
+          this.state.allUserList.map((ele)=>{
+            if(ele.sys_id===event.assigned_to){
+              event_popup.assignedToName = ele.name; 
+            }
+          })
+          //this.findUserName(event.assigned_to)
+
+          //console.log("user name found-2:"+event_popup.assignedToName);
           
-          const event_popup = clicked_slot_date+" "+event.title;
+          //const event_popup = clicked_slot_date+" "+event.title;
           console.log("matching with start or end date :"+event_popup);
           temp_pop_data.push(event_popup);
 
@@ -372,7 +475,15 @@ class ReactCalendar extends Component {
     }
     
   }
-  
+
+  findUserName=(userSysID)=>{
+    this.state.allUserList.map((ele)=>{
+      if(ele.sys_id===userSysID){
+        console.log("user name found :-->"+ele.name);
+        return ele.name
+      }
+    })
+  }
 
   render() {
     
@@ -383,33 +494,44 @@ class ReactCalendar extends Component {
     
     return (
       <div className="main-container">
-        <div className="navBar">
+        {/* <div className="navBar">
           ""
-        </div>
+        </div> */}
         
       
         <div className={`leftside ${this.state.inactive?"inactive":""}`}>
           
           <div className="left-side-toppart">
-                <div className="logo">
-                    <img src={logo} alt="Stanford"/>
-                </div>
+               <div className="">
+                    <TextSearch
+                    permanent_cal_events={permanent_cal_events}
+                    pass_events_data={event_data}
+                    usersList = {this.state.allUserList}
+                    currentEventsAfterTextSearch = {this.setCurrentEventsAfterTextSearch}
+                    />
+                </div> 
                 <div className="toggle-menu-btn">
                      <i className="bi bi-arrow-left-square-fill" onClick={this.handleclicktoggle}></i>
                 </div>
-                <div>
-                  <SideBar permanent_cal_events={permanent_cal_events}
-                    pass_events_data={event_data}
-                    serviceList={this.state.serviceList} 
-                    groupList={this.state.groupList}
-                    currentEventsAfterFilter = {this.setCurrentEventsData}/>
-                </div>
+                
                 {/* <pre>
                     inactive:{inactive}
                     width:{dimensions.width}
                     height:{dimensions.height}
                 </pre> */}
                 
+            </div>
+            <div className="left-side-lowerpart">
+              <div>
+                    <SideBar permanent_cal_events={permanent_cal_events}
+                      pass_events_data={event_data}
+                      serviceList={this.state.serviceList} 
+                      groupList={this.state.groupList}
+                      usersList = {this.state.allUserList}
+                      groupMemberList = {this.state.groupMemberList}
+                      currentEventsAfterFilter = {this.setCurrentEventsData}/>
+              </div>
+
             </div>
         </div>
       
@@ -452,7 +574,14 @@ class ReactCalendar extends Component {
                   {
                     this.state.event_popup_data.map((data)=>(
                       <div className="right-data-display">
-                          <li>{data}</li>
+                        <ul className="ul-info">
+                          <li>{data.Date}</li>
+                          <li>{data.title}</li>
+                          {data.assignment_group?<li>{data.assignment_group}</li>:<li>No Assignmwnt Group</li>}
+                          {data.assignedToName?<li>{data.assignedToName}</li>:<li>Not Assigned to User</li>}
+                          
+                        </ul>
+                          
                       </div>
                       
                     ))

@@ -14,6 +14,8 @@ const SideBar = (props)=>{
     const [cal_events, setCalEvents] = useState([]);
     const [selectedCalEventsIDs, setSelectedCalEventsIDs] = useState([]);
     const [textSearchData, setTextSearchData] = useState([]);
+    const [currentUserList, setCurrentUserList] = useState([]);
+    const [assignmentGroupInUse, setAssignmentGroupInUse] = useState(false);
     
     //const [dimensions, setDimensions]=useState({width:500,height:500});
     
@@ -30,10 +32,10 @@ const SideBar = (props)=>{
 
   },[cal_events]);
 
-  useEffect(()=>{
+  // useEffect(()=>{
     
-      handleTextSearch(textSearchData);
-  },[textSearchData])
+  //     handleTextSearch(textSearchData);
+  // },[textSearchData])
 
 
 
@@ -71,6 +73,177 @@ const SideBar = (props)=>{
     }
   }
 
+  const handleServiceList = (event)=>{
+    
+    const currentSysID = event.target.value;
+    const fiterAllDataArray = []
+    const filterCurrentArray = []
+    //console.log("select key : "+event.target.key);
+
+    if(currentSysID==1){
+      setCalEvents(props.permanent_cal_events);
+    }else{
+      props.pass_events_data.map((srvc)=>{
+        const filterService = {}
+        const collectAllData = {}
+        //console.log("srvc : "+srvc.number +" " +srvc.service +" and current sys id: "+currentSysID);
+        if(srvc.service===currentSysID){
+          filterService.title = srvc.number+" "+srvc.title
+          filterService.start = srvc.start;
+          filterService.end = srvc.end;
+          filterService.color = srvc.color;
+  
+          collectAllData.sys_id = srvc.sys_id
+          
+  
+  
+          
+          //alert("current objcet : "+filterService.title+" "+filterService.start+" "+filterService.end)
+          filterCurrentArray.push(filterService);
+          fiterAllDataArray.push(collectAllData)
+  
+        }
+        
+      })
+      setCalEvents(filterCurrentArray);
+      setSelectedCalEventsIDs(fiterAllDataArray);
+
+    }
+
+    
+  }
+
+  const handleAssignmentGroupList = (event)=>{
+    const currentSysID = event.target.value;
+    const fiterAllDataArray = []
+    const filterCurrentArray = []
+
+    if(currentSysID==2){
+      setAssignmentGroupInUse(false);
+      setCalEvents(props.permanent_cal_events);
+
+    }else{
+      setAssignmentGroupInUse(true);
+      handleUserGroupDependency(currentSysID);
+      props.pass_events_data.map((assgn_group)=>{
+        const filterGroup = {}
+        const collectGroupData = {}
+        //console.log("assgn_group : "+assgn_group.number +" " +assgn_group.assignment_group)
+        if(assgn_group.assignment_group===currentSysID){
+          filterGroup.title = assgn_group.number+" "+assgn_group.title
+          filterGroup.start = assgn_group.start;
+          filterGroup.end = assgn_group.end;
+          filterGroup.color = assgn_group.color
+  
+          collectGroupData.sys_id = assgn_group.sys_id
+  
+          filterCurrentArray.push(filterGroup);
+          fiterAllDataArray.push(collectGroupData)
+  
+        }
+        
+      })
+      
+      setCalEvents(filterCurrentArray);
+      setSelectedCalEventsIDs(fiterAllDataArray);
+    }
+
+    
+  }
+
+  const handleAssignedToList = (event)=>{
+    const currentSysID = event.target.value;
+    const fiterAllDataArray = []
+    const filterCurrentArray = []
+
+    if(currentSysID==3){
+      setCalEvents(props.permanent_cal_events);
+
+    }else{
+
+      props.pass_events_data.map((assgnd_to)=>{
+        const filterUser = {}
+        const collectUserData = {}
+        //console.log("assgnd_to : "+assgnd_to.number +" " +assgnd_to.assigned_to);
+        if(assgnd_to.assigned_to===currentSysID){
+          filterUser.title = assgnd_to.number+" "+assgnd_to.title
+          filterUser.start = assgnd_to.start;
+          filterUser.end = assgnd_to.end;
+          filterUser.color = assgnd_to.color
+  
+          collectUserData.sys_id = assgnd_to.sys_id
+  
+          //console.log("title: "+filterUser.title+" start: "+filterUser.start+" end: "+filterUser.end+" color: "+filterUser.color);
+  
+          filterCurrentArray.push(filterUser);
+          fiterAllDataArray.push(collectUserData)
+  
+        }
+        
+      })
+      
+      setCalEvents(filterCurrentArray);
+      setSelectedCalEventsIDs(fiterAllDataArray);
+
+    }
+
+    
+  }
+
+  const handlePriorityList = (event)=>{
+    const currentSysID = event.target.value;
+    const fiterAllDataArray = []
+    const filterCurrentArray = []
+    if(currentSysID==4){
+      setCalEvents(props.permanent_cal_events);
+    }else{
+      props.pass_events_data.map((prty)=>{
+        const prtyEvent = {}
+        const collectPriorityData = {}
+        //console.log("prty : "+prty.number +" " +prty.priority+" currentSysID: "+currentSysID)
+        if(prty.priority==currentSysID){
+          prtyEvent.title = prty.number+" "+prty.title
+          prtyEvent.start = prty.start;
+          prtyEvent.end = prty.end;
+          prtyEvent.color = prty.color
+  
+          //console.log("test dropdown, priority objcet : "+prtyEvent.title+" "+prtyEvent.start+" "+prtyEvent.end+" "+prtyEvent.color)
+  
+          collectPriorityData.sys_id = prty.sys_id
+  
+          filterCurrentArray.push(prtyEvent);
+          fiterAllDataArray.push(collectPriorityData)
+  
+        }
+        
+      })
+     
+      setCalEvents(filterCurrentArray);
+      setSelectedCalEventsIDs(fiterAllDataArray);
+    }
+
+    
+
+  }
+
+  const handleUserGroupDependency = (group_sys_id)=>{
+    let i=0;
+    const selectedUserList = [];
+    props.groupMemberList.map((grmem)=>{
+      if(grmem.group_sys_id===group_sys_id){
+        props.usersList.map((ele)=>{
+          const selectedUsers = {};
+          if(ele.sys_id===grmem.user_sys_id){
+            selectedUsers.sys_id = ele.sys_id;
+            selectedUsers.name = ele.name;
+            selectedUserList.push(selectedUsers);
+          }
+        })
+      }
+    })
+    setCurrentUserList(selectedUserList);
+
+  }
   const handleDependentChange=(event)=>{
     
     //alert('Change of option in dependent list');
@@ -181,98 +354,98 @@ const SideBar = (props)=>{
     
   }
 
-  const handleTextSearch = (event)=>{
-    //alert('Testing text search');
-    const searched_text = [];
+  // const handleTextSearch = (event)=>{
+  //   //alert('Testing text search');
+  //   const searched_text = [];
     
-      props.pass_events_data.map((searchObject)=>{
+  //     props.pass_events_data.map((searchObject)=>{
         
-        //console.log('textSearchData title check : '+searchObject.title+"  "+textSearchData);
-        if(searchObject.number.includes(textSearchData.toUpperCase())){
-          const tempObject = {};
+  //       //console.log('textSearchData title check : '+searchObject.title+"  "+textSearchData);
+  //       if(searchObject.number.includes(textSearchData.toUpperCase())){
+  //         const tempObject = {};
 
-          //console.log('search item matched with number: '+searchObject.number+" start date: "+searchObject.start);
-          //console.log('textSearchData matched: '+searchObject.title+" "+searchObject.number);
-          tempObject.title = searchObject.number+" "+searchObject.title
-          tempObject.start = searchObject.start
-          tempObject.end = searchObject.end
-          tempObject.color = searchObject.color
+  //         //console.log('search item matched with number: '+searchObject.number+" start date: "+searchObject.start);
+  //         //console.log('textSearchData matched: '+searchObject.title+" "+searchObject.number);
+  //         tempObject.title = searchObject.number+" "+searchObject.title
+  //         tempObject.start = searchObject.start
+  //         tempObject.end = searchObject.end
+  //         tempObject.color = searchObject.color
 
-          searched_text.push(tempObject)
-        }
-        if(searchObject.title.toLowerCase().includes(textSearchData.toLowerCase())){
-          const tempObject = {};
+  //         searched_text.push(tempObject)
+  //       }
+  //       if(searchObject.title.toLowerCase().includes(textSearchData.toLowerCase())){
+  //         const tempObject = {};
 
-          //console.log('search item matched with title: '+searchObject.number+" start date: "+searchObject.start);
-          tempObject.title = searchObject.number+" "+searchObject.title
-          tempObject.start = searchObject.start
-          tempObject.end = searchObject.end
-          tempObject.color = searchObject.color
+  //         //console.log('search item matched with title: '+searchObject.number+" start date: "+searchObject.start);
+  //         tempObject.title = searchObject.number+" "+searchObject.title
+  //         tempObject.start = searchObject.start
+  //         tempObject.end = searchObject.end
+  //         tempObject.color = searchObject.color
 
-          searched_text.push(tempObject)
+  //         searched_text.push(tempObject)
 
-        }
+  //       }
        
-        if(searchObject.priority!="" || searchObject.priority!=="undefined"){
-          if(searchObject.priority_name.toLowerCase()===(textSearchData.toLowerCase())){
-            const tempObject = {};
-            //console.log('priorityEle.name:->>>'+searchObject.priority_name.toLowerCase()+", number :"+searchObject.number+", Search text:=>"+textSearchData.toLowerCase()+", Service name: ->"+searchObject.service);
-            //console.log('search priority matched: '+searchObject.number+" start date: "+searchObject.start);
+  //       if(searchObject.priority!="" || searchObject.priority!=="undefined"){
+  //         if(searchObject.priority_name.toLowerCase()===(textSearchData.toLowerCase())){
+  //           const tempObject = {};
+  //           //console.log('priorityEle.name:->>>'+searchObject.priority_name.toLowerCase()+", number :"+searchObject.number+", Search text:=>"+textSearchData.toLowerCase()+", Service name: ->"+searchObject.service);
+  //           //console.log('search priority matched: '+searchObject.number+" start date: "+searchObject.start);
             
-            tempObject.title = searchObject.number+" "+searchObject.title
-            tempObject.start = searchObject.start
-            tempObject.end = searchObject.end
-            tempObject.color = searchObject.color
+  //           tempObject.title = searchObject.number+" "+searchObject.title
+  //           tempObject.start = searchObject.start
+  //           tempObject.end = searchObject.end
+  //           tempObject.color = searchObject.color
   
-            searched_text.push(tempObject)
+  //           searched_text.push(tempObject)
   
             
-          }
-        }
+  //         }
+  //       }
         
 
-        if(searchObject.service!="" || searchObject.service!=="undefined"){
-          if(searchObject.service_name.toLowerCase().includes(textSearchData.toLowerCase())){
-            const tempObject = {};
+  //       if(searchObject.service!="" || searchObject.service!=="undefined"){
+  //         if(searchObject.service_name.toLowerCase().includes(textSearchData.toLowerCase())){
+  //           const tempObject = {};
   
-            //console.log('search matched with service name: '+searchObject.number+" start date: "+searchObject.start);
+  //           //console.log('search matched with service name: '+searchObject.number+" start date: "+searchObject.start);
   
-            tempObject.title = searchObject.number+" "+searchObject.title
-            tempObject.start = searchObject.start
-            tempObject.end = searchObject.end
-            tempObject.color = searchObject.color
+  //           tempObject.title = searchObject.number+" "+searchObject.title
+  //           tempObject.start = searchObject.start
+  //           tempObject.end = searchObject.end
+  //           tempObject.color = searchObject.color
   
-            searched_text.push(tempObject)
+  //           searched_text.push(tempObject)
             
-          }
-        }
+  //         }
+  //       }
 
-        if(searchObject.assignment_group!="" || searchObject.assignment_group!=="undefined"){
-          if(searchObject.assignment_group_name.toLowerCase().includes(textSearchData.toLowerCase())){
-            const tempObject = {};
+  //       if(searchObject.assignment_group!="" || searchObject.assignment_group!=="undefined"){
+  //         if(searchObject.assignment_group_name.toLowerCase().includes(textSearchData.toLowerCase())){
+  //           const tempObject = {};
   
-            //console.log('search matched with service name: '+searchObject.number+" start date: "+searchObject.start);
+  //           //console.log('search matched with service name: '+searchObject.number+" start date: "+searchObject.start);
   
-            tempObject.title = searchObject.number+" "+searchObject.title
-            tempObject.start = searchObject.start
-            tempObject.end = searchObject.end
-            tempObject.color = searchObject.color
+  //           tempObject.title = searchObject.number+" "+searchObject.title
+  //           tempObject.start = searchObject.start
+  //           tempObject.end = searchObject.end
+  //           tempObject.color = searchObject.color
   
-            searched_text.push(tempObject)
+  //           searched_text.push(tempObject)
             
-          }
-        }
+  //         }
+  //       }
         
         
-      })
+  //     })
       
-      setCalEvents(searched_text)
+  //     setCalEvents(searched_text)
 
-  }
+  // }
 
   const logout = () => {
-    //window.open("http://localhost:3004/auth/logout", "_self");
-    window.open("https://change-request-calendar-backnd.herokuapp.com/auth/logout", "_self");
+    window.open("http://localhost:3004/auth/logout", "_self");
+    //window.open("https://change-request-calendar-backnd.herokuapp.com/auth/logout", "_self");
   };
 
   const handleSelectedDateRange=(selectedFromDate, selectedToDate)=>{
@@ -333,85 +506,90 @@ const SideBar = (props)=>{
 
   }
 
-  // const handleSidebarToggleButton=()=>{
-  //   setInactive(!inactive)
-  // }
+  const handleFilterReset = ()=>{
+    //handleServiceList("1");
+    setCalEvents(props.permanent_cal_events);
 
+  }
 
-    return(
-        //ref={refContainer}
-        <div >
-            <div className="main-menu">
-                <ul>
-                    <div className="col">
-                        <div className="row mt-4">
-                            <div className="form-group">
-                                <select className="form-control" onChange={(e)=>handleChange(e)}>
-                                    <option key="0" value="0">--Select filter--</option>
-                                    <option key="1" value="1">Service</option>
-                                    <option key="2" value="2">Assignment Group</option>
-                                    <option key="3" value="3">Priority</option>
-                                    <option key="4" value="4">Planned Date</option>
-                                    <option key="5" value="5">text</option>
-
-                                </select>
-                            </div>
-                        </div>
-                        <div className="row mt-4">
-                            <div className="form-group">
-                                {
-                                    currentOptionId==4?
-                                    <div>
-                                        <div className="row mt-2">
-                                            <div className="form-control datepicker col-md-2">
-                                                {/* <select className="form-control"> */}
-                                                  <div className="date-picker">
-                                                    <DateRangePicker selectedDateInfo={(e,y)=>handleSelectedDateRange(e,y)}/>
-                                                  </div>
-                                                    {/* <option value="1">Start Planned Date</option> */}
-                                                {/* </select>*/}
-                                            </div> 
-                                        </div>
-                                        {/* <div className="row mt-4">
-                                            <div className="form-group">
-                                                <select className="form-control">
-                                                    <option value="1">End Planned Date</option>
-                                                </select>
-                                            </div>      
-                                        </div> */}
-                                    </div>
-                                    
-                                    :
-                                    currentOptionId!=5?
-                                        <select className="form-control" onChange={(e)=>handleDependentChange(e)}>
-                                            { <option value="0">--dependent filter--</option> }
-                                            {
-                                                currentDropDownList.map((option,i)=>(
-                                                    <option key={i} value={option.sys_id}>{option.name}</option>
-                                                ))
-                    
-                        
-                                            }
-                                     </select>:
-                                    
-                                        <form className="form-inline mr-auto mb-4">
-                                            <input className="form-control mr-sm-2" type="text" placeholder="Search..." aria-label="Search" onChange={(e)=>setTextSearchData(e.target.value)}/>
-                                        </form>
-                                    
-                                
-                                }
-
-                            </div>
-                        </div>
-
-                    </div>
-  
-                </ul>
- 
+  return(
+    <div>
+      <div className="main-menu">
+        <ul>
+          <div className="col">
+            <div className="row mt-5">
+              <div className="dropdown-wrapper">
+              <div className="form-group" >
+                <select className="form-control form-control-sm" onChange={(e)=>handleServiceList(e)}>
+                  <option key="0" value="1">Service</option>
+                    { props.serviceList.map((option,i)=>(
+                      <option key={i} value={option.sys_id}>{option.name}</option>
+                      ))
+                    }  
+                </select>
+                
+              </div>
+              </div>
             </div>
-            
+            <div className="row mt-4">
+              <div className="form-group">
+                <select className="form-control form-control-sm" placeholder="Assignment Group" onChange={(e)=>handleAssignmentGroupList(e)}>
+                  <option key="0" value="2">Assignment Group</option>
+                    { props.groupList.map((option,i)=>(
+                      <option key={i} value={option.sys_id}>{option.name}</option>
+                      ))
+                    }  
+                </select>
+                
+              </div>
+            </div>
+            <div className="row mt-4">
+              <div className="form-group">
+                <select className="form-control form-control-sm" onChange={(e)=>handleAssignedToList(e)}>
+                  <option key="0" value="3">Assiged To</option>
+                  {assignmentGroupInUse?currentUserList.map((membr, j)=>(
+                    <option key={j} value={membr.sys_id}>{membr.name}</option>
+                    )):
+                    props.usersList.map((option,i)=>(
+                      <option key={i} value={option.sys_id}>{option.name}</option>
+                      ))
+                    
+                  }  
+                </select>
+              </div>
+            </div>
+            <div className="row mt-4">
+              <div className="form-group">
+                <select className="form-control form-control-sm" onChange={(e)=>handlePriorityList(e)}>
+                  <option key="0" value="4">Priority</option>
+                    { priorityList.map((option,i)=>(
+                      <option key={i} value={option.sys_id}>{option.name}</option>
+                      ))
+                    }  
+                </select>
+              </div>
+            </div>
+            <div className="row mt-4">
+              <div className="date-picker">
+                <div className="form-control datepicker col-sm-4">                    
+                
+                  <DateRangePicker selectedDateInfo={(e,y)=>handleSelectedDateRange(e,y)}/>
+                </div> 
+              </div>
+            </div>
+            <div className="row mt-5">
+              <div className="form-group">
+                <div className="form-control form-control-sm">
+                  
+                  <button className="submit-filters" type="submit" onClick={handleFilterReset}>Reset</button>
+                </div>
+              </div>
+            </div>
         </div>
-    )
+      </ul>
+    </div>  
+  </div>
+)
 
     
 
